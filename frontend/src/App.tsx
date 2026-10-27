@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL || ""
+).replace(/\/+$/, "");
 
 type Action =
   | {
@@ -64,7 +67,9 @@ function App() {
 
   const loadTasks = async () => {
     try {
-      const response = await fetch("/api/tasks");
+     const response = await fetch(
+  `${API_BASE_URL}/api/tasks`
+);
 
       if (!response.ok) {
         throw new Error("Failed to load tasks");
@@ -93,7 +98,7 @@ function App() {
       setSharedLoading(true);
 
       const response = await fetch(
-        `/api/tasks/${id}`
+        `${API_BASE_URL}/api/tasks/${id}`
       );
 
       const data = await response.json();
@@ -160,7 +165,7 @@ function App() {
       );
 
       const response = await fetch(
-        "/api/record/start",
+        `${API_BASE_URL}/api/record/start`,
         {
           method: "POST",
           headers: {
@@ -208,7 +213,7 @@ function App() {
       );
 
       const response = await fetch(
-        "/api/record/stop",
+        `${API_BASE_URL}/api/record/stop`,
         {
           method: "POST",
           headers: {
@@ -274,7 +279,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "/api/tasks",
+        `${API_BASE_URL}/api/tasks`,
         {
           method: "POST",
           headers: {
@@ -335,7 +340,7 @@ function App() {
       );
 
       const response = await fetch(
-        `/api/tasks/${task.id}/replay`,
+         `${API_BASE_URL}/api/tasks/${task.id}/replay`,
         {
           method: "POST",
           headers: {
@@ -376,8 +381,9 @@ function App() {
   const shareTask = async (
     task: Task
   ) => {
+    // Share the frontend route, not the temporary backend/ngrok URL.
     const link =
-      `https://finalize-cyclist-unspoiled.ngrok-free.dev/share/${task.id}`;
+      `${window.location.origin}/share/${task.id}`;
 
     setShareLink(link);
 
@@ -589,6 +595,33 @@ function App() {
         <style>{`
           * {
             box-sizing: border-box;
+          }
+
+          html,
+          body,
+          #root {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+          }
+
+          /*
+           * Override the default Vite starter #root styles.
+           * Those styles commonly add a max-width, auto margins,
+           * and padding that create the unwanted vertical side lines.
+           */
+          #root {
+            max-width: none !important;
+            padding: 0 !important;
+            text-align: initial !important;
+          }
+
+          .app {
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            border: 0;
+            outline: 0;
           }
 
           body {
@@ -1725,19 +1758,16 @@ function App() {
         /* HERO */
 
         .hero {
-          width:
-            min(
-              1200px,
-              calc(100% - 48px)
-            );
-
-          margin: auto;
-          padding: 115px 0 90px;
+          width: calc(100% - 32px);
+          max-width: 1320px;
+          margin: 0 auto;
+          padding: 105px 0 80px;
           text-align: center;
         }
 
         .hero-content {
-          max-width: 800px;
+          width: 100%;
+          max-width: 100%;
           margin: auto;
         }
 
@@ -1772,22 +1802,16 @@ function App() {
         }
 
         .hero h1 {
-          font-size:
-            clamp(
-              54px,
-              8vw,
-              105px
-            );
-
-          line-height: .91;
-          letter-spacing: -6px;
-
+          font-size: clamp(38px, 5.2vw, 76px);
+          line-height: 1;
+          letter-spacing: -3px;
           margin: 0;
-
           font-weight: 600;
+           color: #f5f5f5;
         }
 
         .hero h1 span {
+          display: inline-block;
           color: #696969;
         }
 
@@ -2886,9 +2910,16 @@ function App() {
             padding-top: 75px;
           }
 
-          .hero h1 {
-            letter-spacing: -3px;
+          .hero-content {
+            max-width: 100%;
           }
+
+          .hero h1 {
+            font-size: clamp(34px, 6.5vw, 56px);
+            letter-spacing: -1.8px;
+            line-height: 1.05;
+          }
+
 
           .browser-body {
             height: 300px;
